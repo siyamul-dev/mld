@@ -23,7 +23,7 @@ app.add_middleware(
 )
 
 # MODEL = tf.keras.models.load_model("./../models/2")
-MODEL = tf.keras.models.load_model("./../models/mango_v3.h5")
+MODEL = tf.keras.models.load_model("models/mango_v3.h5")
 
 CLASS_NAMES = ['Anthracnose',
  'Bacterial Canker',

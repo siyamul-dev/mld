@@ -5,7 +5,6 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 import tensorflow as tf
-
 app = FastAPI()
 
 # origins = [
@@ -23,7 +22,9 @@ app.add_middleware(
 )
 
 # MODEL = tf.keras.models.load_model("./../models/2")
-MODEL = tf.keras.models.load_model("models/mango_v3.h5")
+MODEL = tf.keras.models.load_model("models/mango_v9.h5")
+
+
 
 CLASS_NAMES = ['Anthracnose',
  'Bacterial Canker',
@@ -34,6 +35,10 @@ CLASS_NAMES = ['Anthracnose',
  'Powdery Mildew',
  'Sooty Mould']
 
+@app.get("/")
+async def root():
+    return "Welcome! to 'Mango Leaf Diseases Prediction API'"
+    
 @app.get("/ping")
 async def ping():
     return "Hello, I am alive"
@@ -47,8 +52,12 @@ async def predict(
     file: UploadFile = File(...)
 ):
     image = read_file_as_image(await file.read())
-    img_batch = np.expand_dims(image, 0)
-    
+
+    image_resized = tf.image.resize(image, (224, 224))
+    img_batch = np.expand_dims(image_resized, 0)
+    # print(image.shape)
+    # print(image_resized.shape)
+   
     predictions = MODEL.predict(img_batch)
 
     predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
@@ -60,4 +69,3 @@ async def predict(
 
 if __name__ == "__main__":
     uvicorn.run(app, host='0.0.0.0', port=8000)
-
